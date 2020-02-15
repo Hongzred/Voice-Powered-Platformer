@@ -1,18 +1,19 @@
 import Phaser from "phaser";
 import logoImg from "./assets/logo.png";
+import config from './config/config';
+import GameScene from './scenes/GameScene';
 
-const config = {
-  type: Phaser.AUTO,
-  parent: "phaser-example",
-  width: 800,
-  height: 600,
-  scene: {
-    preload: preload,
-    create: create
+class Game extends Phaser.Game {
+  constructor() {
+    super(config);
+    this.scene.add("Game", GameScene);
+    this.scene.start('Game');
   }
-};
+}
 
-const game = new Phaser.Game(config);
+window.onload = function () {
+  window.game = new Game();
+}
 
 function preload() {
   this.load.image("logo", logoImg);
