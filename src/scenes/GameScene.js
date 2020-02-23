@@ -128,6 +128,35 @@ export default class GameScene extends Phaser.Scene {
   }
 
   update() {
+    navigator.permissions.query({ name: "microphone" }).then(result => {
+      // console.log(result);
+      if (annyang) {
+        // console.log("READY");
+      }
+
+      let commands = {
+        "run *dir": dir => {
+          let div = document.createElement("div");
+          div.appendChild(document.createTextNode(`RUNNING ${dir}`));
+          document.getElementById("display").appendChild(div);
+        },
+        "jump *dir": dir => {
+          let div = document.createElement("div");
+          div.appendChild(document.createTextNode(`JUMPING ${dir}`));
+          document.getElementById("display").appendChild(div);
+        },
+        jump: () => {
+          let div = document.createElement("div");
+          div.appendChild(document.createTextNode(`JUMPED`));
+          document.getElementById("display").appendChild(div);
+          this.player.setVelocityY(-330);
+        }
+      };
+      annyang.addCommands(commands);
+
+      annyang.start();
+    });
+
     if (this.gameOver)
     {
         return;
