@@ -11,4 +11,5 @@
       "modules": false
     }]
   ],
+  "plugins": ["@babel/plugin-syntax-class-properties", "transform-class-properties"]
 }
