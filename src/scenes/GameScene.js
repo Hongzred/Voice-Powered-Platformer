@@ -14,6 +14,11 @@ export default class GameScene extends Phaser.Scene {
   score = 0;
   gameOver = false;
   scoreText;
+  keyboard = {
+    left: { isDown: false, isUp: true },
+    right: { isDown: false, isUp: true },
+    up: { isDown: false, isUp: true }
+  };
 
   constructor() {
     super("Game");
@@ -122,9 +127,21 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.bombs, this.platforms);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
+    this.physics.add.overlap(
+      this.player,
+      this.stars,
+      this.collectStar,
+      null,
+      this
+    );
 
-    this.physics.add.collider(this.player, this.bombs, this.hitBomb, null, this);
+    this.physics.add.collider(
+      this.player,
+      this.bombs,
+      this.hitBomb,
+      null,
+      this
+    );
   }
 
   update() {
@@ -135,82 +152,141 @@ export default class GameScene extends Phaser.Scene {
       }
 
       let commands = {
-        "run *dir": dir => {
-          let div = document.createElement("div");
-          div.appendChild(document.createTextNode(`RUNNING ${dir}`));
-          document.getElementById("display").appendChild(div);
-        },
-        "jump *dir": dir => {
-          let div = document.createElement("div");
-          div.appendChild(document.createTextNode(`JUMPING ${dir}`));
-          document.getElementById("display").appendChild(div);
-        },
-        jump: () => {
-          let div = document.createElement("div");
-          div.appendChild(document.createTextNode(`JUMPED`));
-          document.getElementById("display").appendChild(div);
-          this.player.setVelocityY(-330);
+        "*command": command => {
+          console.log(`Command: ${command}`);
+          switch (command.charAt(0)) {
+            case "l":
+            case "b":
+              this.handleLeft();
+              break;
+            case "r":
+            case "g":
+              this.handleRight();
+              break;
+            case "j":
+            case "u":
+              this.handleJump();
+              break;
+          }
         }
       };
+
       annyang.addCommands(commands);
 
       annyang.start();
     });
 
-    if (this.gameOver)
-    {
-        return;
+    if (this.gameOver) {
+      return;
     }
+    console.log(
+      `left: ${this.keyboard.left.isDown} right: ${this.keyboard.right.isDown}`
+    );
 
-    if (this.cursors.left.isDown)
-    {
+    if (this.keyboard.left.isDown) {
       this.player.setVelocityX(-160);
 
-      this.player.anims.play('left', true);
-    }
-    else if (this.cursors.right.isDown)
-    {
+      this.player.anims.play("left", true);
+    } else if (this.keyboard.right.isDown) {
       this.player.setVelocityX(160);
 
-      this.player.anims.play('right', true);
-    }
-    else
-    {
+      this.player.anims.play("right", true);
+    } else if (this.keyboard.up.isDown) {
+      this.player.setVelocity(-330);
+      setTimeout(() => {
+        this.keyboard.up.isDown = false;
+      }, 0);
+    } else {
       this.player.setVelocityX(0);
 
-      this.player.anims.play('turn');
+      this.player.anims.play("turn");
     }
 
-    if (this.cursors.up.isDown && this.player.body.touching.down)
-    {
+    //reset when keyboard pressed
+    if (
+      this.cursors.up.isDown ||
+      this.cursors.down.isDown ||
+      this.cursors.left.isDown ||
+      this.cursors.right.isDown
+    ) {
+      this.keyboard = {
+        left: { isDown: false, isUp: true },
+        right: { isDown: false, isUp: true },
+        up: { isDown: false, isUp: true }
+      };
+    }
+
+    if (
+      // this.cursors.up.isDown ||
+      this.cursors.up.isDown &&
+      this.player.body.touching.down
+    ) {
+      this.player.setVelocityY(-330);
+    }
+
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-160);
+
+      this.player.anims.play("left", true);
+    } else if (this.cursors.right.isDown) {
+      this.player.setVelocityX(160);
+
+      this.player.anims.play("right", true);
+    }
+
+    if (
+      // this.cursors.up.isDown ||
+      this.cursors.up.isDown &&
+      this.player.body.touching.down
+    ) {
       this.player.setVelocityY(-330);
     }
   }
 
-  collectStar(player, star)  {
+  handleLeft() {
+    this.keyboard.right.isDown = false;
+    this.keyboard.right.isUp = true;
+    this.keyboard.left.isDown = true;
+    this.keyboard.left.isUp = false;
+  }
+
+  handleRight() {
+    this.keyboard.left.isDown = false;
+    this.keyboard.left.isUp = true;
+    this.keyboard.right.isDown = true;
+    this.keyboard.right.isUp = false;
+  }
+
+  handleJump() {
+    if (this.player.body.touching.down) {
+      this.keyboard.up.isDown = true;
+      this.keyboard.up.isUp = false;
+    }
+  }
+
+  collectStar(player, star) {
     star.disableBody(true, true);
 
     //  Add and update the score
     this.score += 10;
-    this.scoreText.setText('Score: ' + this.score);
+    this.scoreText.setText("Score: " + this.score);
 
-    if (this.stars.countActive(true) === 0)
-    {
-        //  A new batch of stars to collect
-        this.stars.children.iterate(function (child) {
+    if (this.stars.countActive(true) === 0) {
+      //  A new batch of stars to collect
+      this.stars.children.iterate(function(child) {
+        child.enableBody(true, child.x, 0, true, true);
+      });
 
-            child.enableBody(true, child.x, 0, true, true);
+      var x =
+        player.x < 400
+          ? Phaser.Math.Between(400, 800)
+          : Phaser.Math.Between(0, 400);
 
-        });
-
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-        var bomb = this.bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
-
+      var bomb = this.bombs.create(x, 16, "bomb");
+      bomb.setBounce(1);
+      bomb.setCollideWorldBounds(true);
+      bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+      bomb.allowGravity = false;
     }
   }
 
@@ -219,7 +295,7 @@ export default class GameScene extends Phaser.Scene {
 
     player.setTint(0xff0000);
 
-    player.anims.play('turn');
+    player.anims.play("turn");
 
     this.gameOver = true;
   }
