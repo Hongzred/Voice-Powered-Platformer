@@ -53,6 +53,43 @@ export default class GameScene extends Phaser.Scene {
     //   }
     // );
     //  A simple background for our game
+
+    navigator.permissions.query({ name: "microphone" }).then(result => {
+      // console.log(result);
+      if (annyang) {
+        // console.log("READY");
+      }
+
+      let commands = {
+        "*command": command => {
+          // console.log(`Command: ${command}`);
+          let div = document.createElement('div');
+              div.appendChild(document.createTextNode(`${command}`));
+              document
+                .getElementById('display')
+                .appendChild(div);
+          switch (command.charAt(0)) {
+            case "l":
+            case "b":
+              this.handleLeft();
+              break;
+            case "r":
+            case "g":
+              this.handleRight();
+              break;
+            case "j":
+            case "u":
+              this.handleJump();
+              break;
+          }
+        }
+      };
+
+      annyang.addCommands(commands);
+
+      annyang.start();
+    });
+    
     this.add.image(400, 300, "sky");
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
@@ -145,41 +182,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   update() {
-    navigator.permissions.query({ name: "microphone" }).then(result => {
-      // console.log(result);
-      if (annyang) {
-        // console.log("READY");
-      }
-
-      let commands = {
-        "*command": command => {
-          // console.log(`Command: ${command}`);
-          let div = document.createElement('div');
-              div.appendChild(document.createTextNode(`${command}`));
-              document
-                .getElementById('display')
-                .appendChild(div);
-          switch (command.charAt(0)) {
-            case "l":
-            case "b":
-              this.handleLeft();
-              break;
-            case "r":
-            case "g":
-              this.handleRight();
-              break;
-            case "j":
-            case "u":
-              this.handleJump();
-              break;
-          }
-        }
-      };
-
-      annyang.addCommands(commands);
-
-      annyang.start();
-    });
+    
 
     if (this.gameOver) {
       return;
