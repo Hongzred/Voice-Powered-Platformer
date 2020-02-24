@@ -153,7 +153,12 @@ export default class GameScene extends Phaser.Scene {
 
       let commands = {
         "*command": command => {
-          console.log(`Command: ${command}`);
+          // console.log(`Command: ${command}`);
+          let div = document.createElement('div');
+              div.appendChild(document.createTextNode(`${command}`));
+              document
+                .getElementById('display')
+                .appendChild(div);
           switch (command.charAt(0)) {
             case "l":
             case "b":
@@ -179,9 +184,9 @@ export default class GameScene extends Phaser.Scene {
     if (this.gameOver) {
       return;
     }
-    console.log(
-      `left: ${this.keyboard.left.isDown} right: ${this.keyboard.right.isDown}`
-    );
+    // console.log(
+    //   `left: ${this.keyboard.left.isDown} right: ${this.keyboard.right.isDown}`
+    // );
 
     if (this.keyboard.left.isDown) {
       this.player.setVelocityX(-160);
