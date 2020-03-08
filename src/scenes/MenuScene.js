@@ -1,6 +1,7 @@
 import "phaser";
 import GameScene from "./GameScene";
 import config from "../config/config";
+import MapNavScene from "./MapNavScene";
 
 export default class MenuScene extends Phaser.Scene {
     constructor () {
@@ -8,11 +9,15 @@ export default class MenuScene extends Phaser.Scene {
     }
 
     create() {
-        
+
         let x = config.centerX;
         let y = config.centerY;
-        const title = this.add.text(x, y - 50, 'V.P.P');
-        const text = this.add.text(x, y + 50, "Start");
+        const title = this.add.text(x, y - 50, 'V.P.P', {
+            fontSize: "32px",
+          });
+        const text = this.add.text(x, y + 50, "Start", {
+            fontSize: "32px",
+          });
         this.createMouseInput();
         this.createKeyboardInput();
     }
@@ -35,6 +40,8 @@ export default class MenuScene extends Phaser.Scene {
 
     goPlay() {
         this.scene.add('Game', GameScene);
-        this.scene.start('Game');
-    }
+        this.scene.add('MapNav', MapNavScene);
+        // this.scene.start('Game');
+        this.scene.start('MapNav');
+    } 
 }
