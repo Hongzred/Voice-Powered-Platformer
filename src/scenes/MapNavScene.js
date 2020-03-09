@@ -39,6 +39,9 @@ export default class MapNavScene extends Phaser.Scene {
 
     create()
     {       
+        //  Manual controls
+        this.cursors = this.input.keyboard.createCursorKeys();
+
         //  create layout
         this.map = this.make.tilemap({key: 'map', tileWidth: 32, tileHeight: 32});
         
@@ -104,7 +107,33 @@ export default class MapNavScene extends Phaser.Scene {
 
     update(time, delta)
     {
+        if (this.cursors.right.isDown) 
+        {
+            this.player.setVelocityX(this.speed);
+            this.player.setVelocityY(0);
+            this.player.setAngle(0);
+        }
 
+        if (this.cursors.left.isDown)
+        {
+            this.player.setVelocityX(-1 * this.speed);
+            this.player.setVelocityY(0);
+            this.player.setAngle(180);
+        }
+
+        if (this.cursors.down.isDown) 
+        {
+            this.player.setVelocityY(this.speed);
+            this.player.setVelocityX(0);
+            this.player.setAngle(90);
+        }
+
+        if (this.cursors.up.isDown)
+        {
+            this.player.setVelocityY(-1 * this.speed);
+            this.player.setVelocityX(0);
+            this.player.setAngle(270);
+    }
     }
 
     setupVoice(annyang)
