@@ -158,6 +158,11 @@ export default class GameScene extends Phaser.Scene {
       fill: "#000"
     });
 
+    this.backText = this.add.text(300, 16, "Back", {
+      fontSize: "32px",
+      fill: "#000"
+    });
+
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.stars, this.platforms);
