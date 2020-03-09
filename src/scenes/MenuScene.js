@@ -2,13 +2,23 @@ import "phaser";
 import GameScene from "./GameScene";
 import config from "../config/config";
 import MapNavScene from "./MapNavScene";
+import skyImg from "../assets/sky.png";
 
 export default class MenuScene extends Phaser.Scene {
     constructor () {
         super({key: 'Menu', active: false});
     }
 
+    preload() {
+        this.load.image("sky", skyImg);
+    }
     create() {
+        this.add.image(400, 300, 'sky');
+        this.lights.enable();
+
+        this.lights.addLight(300, 300, 300, 0xff0000, 1);
+        this.lights.addLight(400, 300, 300, 0x00ff00, 1);
+        this.lights.addLight(600, 500, 300, 0x0000ff, 1);
 
         let x = config.centerX;
         let y = config.centerY;

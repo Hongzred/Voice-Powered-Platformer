@@ -5,8 +5,8 @@ export default {
   width: 800,
   height: 600,
   backgroundColor: '#1a1a2d',
-  centerX: Math.round(0.5 * 800),
-  centerY: Math.round(0.5 * 600),
+  centerX: Math.round(0.5 * 800) - 30,
+  centerY: Math.round(0.5 * 600) - 30,
   physics: {
     default: "arcade",
     // arcade: {
