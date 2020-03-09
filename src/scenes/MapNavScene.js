@@ -4,8 +4,8 @@ import config from "../config/config";
 
 export default class MapNavScene extends Phaser.Scene {
 
+    controls;
     map;
-    cursors;
     player;
     barrels;
     coins;
@@ -22,8 +22,14 @@ export default class MapNavScene extends Phaser.Scene {
         super({key: 'MapNav'});
     }
 
+    init(data)
+    {
+        this.annyang = data.annyang;
+    }
+
     preload() 
     {
+        console.log('preload')
         this.load.image('tiles', '/src/assets/VPP_level_1_tilemap.png',  { frameWidth: 32, frameHeight: 32 });
         this.load.image('coin', '/src/assets/coinGold.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('lock', '/src/assets/lock_yellow.png', { frameWidth: 70, frameHeight: 70});
@@ -32,10 +38,7 @@ export default class MapNavScene extends Phaser.Scene {
     }
 
     create()
-    {
-        //  controls
-        this.cursors = this.input.keyboard.createCursorKeys();
-        
+    {       
         //  create layout
         this.map = this.make.tilemap({key: 'map', tileWidth: 32, tileHeight: 32});
         
@@ -91,37 +94,64 @@ export default class MapNavScene extends Phaser.Scene {
             .main
             .setBounds(0, 0, 800, 800);
         this.cameras.main.startFollow(this.player);
+
+        //  Setup controls
+        this.setupControls();
+        
+        //  Setup annyang
+        this.setupVoice(this.annyang);
     }
 
     update(time, delta)
     {
-        
-        if (this.cursors.right.isDown) 
-        {
-            this.player.setVelocityX(this.speed);
-            this.player.setVelocityY(0);
-            this.player.setAngle(0);
-        }
-        
-        if (this.cursors.left.isDown)
-        {
-            this.player.setVelocityX(-1 * this.speed);
-            this.player.setVelocityY(0);
-            this.player.setAngle(180);
-        }
-        
-        if (this.cursors.down.isDown) 
-        {
-            this.player.setVelocityY(this.speed);
-            this.player.setVelocityX(0);
-            this.player.setAngle(90);
-        }
 
-        if (this.cursors.up.isDown)
-        {
-            this.player.setVelocityY(-1 * this.speed);
-            this.player.setVelocityX(0);
-            this.player.setAngle(270);
+    }
+
+    setupVoice(annyang)
+    {
+        let commands = {
+            'l*rest' : rest => {
+                this.controls.goLeft();
+            },
+            'r*rest' : rest => {
+                this.controls.goRight();
+            },
+            't*rest' : rest => {
+                this.controls.goUp();
+            },
+            'd*rest' : rest => {
+                this.controls.goDown();
+            }
+
         }
+        annyang.removeCommands();
+        annyang.addCommands(commands);
+        annyang.start();
+    }
+
+    setupControls()
+    {
+        this.controls = {
+            goDown: () => {
+                this.player.setVelocityY(this.speed);
+                this.player.setVelocityX(0);
+                this.player.setAngle(90);
+            },
+            goUp: () => {
+                this.player.setVelocityY(-1 * this.speed);
+                this.player.setVelocityX(0);
+                this.player.setAngle(270);
+            },
+            goLeft: () => {
+                this.player.setVelocityX(-1 * this.speed);
+                this.player.setVelocityY(0);
+                this.player.setAngle(180);
+            },
+            goRight: () => {
+                this.player.setVelocityX(this.speed);
+                this.player.setVelocityY(0);
+                this.player.setAngle(0);
+            },
+        };
     }
 }

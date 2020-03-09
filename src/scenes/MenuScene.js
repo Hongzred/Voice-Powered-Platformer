@@ -20,6 +20,8 @@ export default class MenuScene extends Phaser.Scene {
           });
         this.createMouseInput();
         this.createKeyboardInput();
+        
+        annyang.start();
     }
 
     createMouseInput() {
@@ -42,6 +44,11 @@ export default class MenuScene extends Phaser.Scene {
         this.scene.add('Game', GameScene);
         this.scene.add('MapNav', MapNavScene);
         // this.scene.start('Game');
-        this.scene.start('MapNav');
+
+        annyang.pause();
+
+        this.scene.start('MapNav', {
+            annyang: annyang
+        });
     } 
 }
