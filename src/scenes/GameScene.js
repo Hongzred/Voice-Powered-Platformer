@@ -63,11 +63,11 @@ export default class GameScene extends Phaser.Scene {
       let commands = {
         "*command": command => {
           // console.log(`Command: ${command}`);
-          let div = document.createElement('div');
-              div.appendChild(document.createTextNode(`${command}`));
-              document
-                .getElementById('display')
-                .appendChild(div);
+          // let div = document.createElement('div');
+          //     div.appendChild(document.createTextNode(`${command}`));
+          //     document
+          //       .getElementById('display')
+          //       .appendChild(div);
           switch (command.charAt(0)) {
             case "l":
             case "b":
