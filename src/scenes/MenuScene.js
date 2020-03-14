@@ -11,6 +11,7 @@ export default class MenuScene extends Phaser.Scene {
 
     preload() {
         this.load.image("sky", skyImg);
+        this.load.image('player', '/src/assets/car.png');
     }
     create() {
         this.add.image(400, 300, 'sky');
