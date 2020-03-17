@@ -1,6 +1,7 @@
 import "phaser";
 import GameScene from "./GameScene";
 import config from "../config/config";
+import TestObject from "../objects/TestObject"
 
 export default class MapNavScene extends Phaser.Scene {
 
@@ -33,12 +34,13 @@ export default class MapNavScene extends Phaser.Scene {
         this.load.image('tiles', '/src/assets/VPP_level_1_tilemap.png',  { frameWidth: 32, frameHeight: 32 });
         this.load.image('coin', '/src/assets/coinGold.png', { frameWidth: 32, frameHeight: 32});
         this.load.image('lock', '/src/assets/lock_yellow.png', { frameWidth: 70, frameHeight: 70});
-        this.load.image('player', '/src/assets/car.png');
         this.load.tilemapTiledJSON('map', '/src/assets/VPP Level 1 Demo 2.json')
     }
 
     create()
     {       
+
+
         //  Manual controls
         this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -56,7 +58,8 @@ export default class MapNavScene extends Phaser.Scene {
             0, 0);
         this.map.setCollision([13], true, true, this.barrels);
 
-        this.player = this.physics.add.sprite(16 + 8 * 32, 16 + 8 * 32, 'player');
+        this.player = this.add.existing(new TestObject(this, 16 + 8 * 32, 16 + 8 * 32, 'player'))
+        this.physics.add.existing(this.player);
         this.player.setAngle(270);
         
         this.coins = this.physics.add.group();
@@ -97,9 +100,6 @@ export default class MapNavScene extends Phaser.Scene {
             .main
             .setBounds(0, 0, 800, 800);
         this.cameras.main.startFollow(this.player);
-
-        //  Setup controls
-        this.setupControls();
         
         //  Setup annyang
         this.setupVoice(this.annyang);
@@ -109,47 +109,39 @@ export default class MapNavScene extends Phaser.Scene {
     {
         if (this.cursors.right.isDown) 
         {
-            this.player.setVelocityX(this.speed);
-            this.player.setVelocityY(0);
-            this.player.setAngle(0);
+            this.player.action.go.right(time, delta);
         }
 
         if (this.cursors.left.isDown)
         {
-            this.player.setVelocityX(-1 * this.speed);
-            this.player.setVelocityY(0);
-            this.player.setAngle(180);
+            this.player.action.go.left(time, delta);
         }
 
         if (this.cursors.down.isDown) 
         {
-            this.player.setVelocityY(this.speed);
-            this.player.setVelocityX(0);
-            this.player.setAngle(90);
+            this.player.action.go.down(time, delta);
         }
 
         if (this.cursors.up.isDown)
         {
-            this.player.setVelocityY(-1 * this.speed);
-            this.player.setVelocityX(0);
-            this.player.setAngle(270);
-    }
+            this.player.action.go.up(time, delta);
+        }
     }
 
     setupVoice(annyang)
     {
         let commands = {
             'l*rest' : rest => {
-                this.controls.goLeft();
+                this.player.action.go.left();
             },
             'r*rest' : rest => {
-                this.controls.goRight();
+                this.player.action.go.right();
             },
             't*rest' : rest => {
-                this.controls.goUp();
+                this.player.action.go.up();
             },
             'd*rest' : rest => {
-                this.controls.goDown();
+                this.player.action.go.down();
             }
 
         }
@@ -157,30 +149,5 @@ export default class MapNavScene extends Phaser.Scene {
         annyang.addCommands(commands);
         annyang.start();
     }
-
-    setupControls()
-    {
-        this.controls = {
-            goDown: () => {
-                this.player.setVelocityY(this.speed);
-                this.player.setVelocityX(0);
-                this.player.setAngle(90);
-            },
-            goUp: () => {
-                this.player.setVelocityY(-1 * this.speed);
-                this.player.setVelocityX(0);
-                this.player.setAngle(270);
-            },
-            goLeft: () => {
-                this.player.setVelocityX(-1 * this.speed);
-                this.player.setVelocityY(0);
-                this.player.setAngle(180);
-            },
-            goRight: () => {
-                this.player.setVelocityX(this.speed);
-                this.player.setVelocityY(0);
-                this.player.setAngle(0);
-            },
-        };
-    }
+    
 }
