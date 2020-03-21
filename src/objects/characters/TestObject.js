@@ -6,11 +6,13 @@ class ActionQueue extends Phaser.Physics.Arcade.Group {
     testObject;
     actionQueue;
     texture;
+    depth;
 
     constructor(
         world, 
         scene,
         testObject,
+        depth,
         leftTexture, rightTexture, downTexture, upTexture)
     {
         super(world, scene);
@@ -18,6 +20,7 @@ class ActionQueue extends Phaser.Physics.Arcade.Group {
         this.testObject = testObject;
         this.actionQueue = new Phaser.Structs.List(scene);
         this.texture = {leftTexture, rightTexture, downTexture, upTexture};
+        this.depth = depth;
 
         testObject.addListener(TestObject.Events.ACTION_ENQUEUED, this.handleActionEnqueuedEvent, this);
         testObject.addListener(TestObject.Events.ACTION_DEQUEUED, this.handleActionDequeuedEvent, this);
@@ -45,7 +48,8 @@ class ActionQueue extends Phaser.Physics.Arcade.Group {
             textureKey);
         arrowSprite
             .setScrollFactor(0, 0)
-            .setAlpha(0.6);
+            .setAlpha(0.6)
+            .setDepth(this.depth)
         this.actionQueue.add(arrowSprite);
         this.add(arrowSprite, true);      
     }

@@ -4,6 +4,8 @@ import Overlay from "../objects/Overlay"
 
 export default class MapNavScene extends Phaser.Scene {
 
+    static DEPTH_COMMAND;
+
     controls;
     map;
     player;
@@ -71,7 +73,7 @@ export default class MapNavScene extends Phaser.Scene {
         //  Add action queue sprite to scene
         this.add
             .existing(new TestObject.ActionQueue(
-                this.physics.world, this, this.player,
+                this.physics.world, this, this.player, MapNavScene.DEPTH_COMMAND,
                 TestObject.Actions.GO_LEFT, 
                 TestObject.Actions.GO_RIGHT, 
                 TestObject.Actions.GO_DOWN, 
