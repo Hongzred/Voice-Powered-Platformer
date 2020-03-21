@@ -2,6 +2,7 @@ import "phaser";
 import GameScene from "./GameScene";
 import config from "../config/config";
 import MapNavScene from "./MapNavScene";
+import LevelIntro from "./LevelIntro";
 import skyImg from "../assets/sky.png";
 
 export default class MenuScene extends Phaser.Scene {
@@ -53,12 +54,11 @@ export default class MenuScene extends Phaser.Scene {
 
     goPlay() {
         this.scene.add('Game', GameScene);
-        this.scene.add('MapNav', MapNavScene);
-        // this.scene.start('Game');
+        this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro)
 
         annyang.pause();
 
-        this.scene.start('MapNav', {
+        this.scene.start(LevelIntro.LEVEL_NAME, {
             annyang: annyang
         });
     } 
