@@ -29,8 +29,8 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tiles', '/src/assets/lpc_farming.png', {frameWidth: 32, frameHeight: 32});
-        this.load.tilemapTiledJSON('map', '/src/assets/demo-level2.json');
+        this.load.image('tiles2', '/src/assets/lpc_farming.png', {frameWidth: 32, frameHeight: 32});
+        this.load.tilemapTiledJSON('map2', '/src/assets/demo-level2.json');
 
         this.load.image(TestObject.Actions.GO_LEFT, './src/assets/left.png');
         this.load.image(TestObject.Actions.GO_RIGHT, './src/assets/right.png');
@@ -44,24 +44,24 @@ export default class Level2Scene extends Phaser.Scene {
         this.cursor = this.input.keyboard.createCursorKeys();
 
         //create layout
-        this.map = this.make.tilemap({key: 'map', tileWidth: 32, tileHeight: 32});
+        this.map = this.make.tilemap({key: 'map2', tileWidth: 32, tileHeight: 32});
 
         //creat ground tiles
         this.ground = this.map.createStaticLayer(
             'bot',
-            this.map.addTilesetImage('lpc_farming', 'tiles', 32, 32),
+            this.map.addTilesetImage('lpc_farming', 'tiles2', 32, 32),
             0, 0)
 
         //create sandbags tiles
         this.sandBags = this.map.createStaticLayer(
             'top',
-            this.map.addTilesetImage('lpc_farming', 'tiles', 32, 32),
+            this.map.addTilesetImage('lpc_farming', 'tiles2', 32, 32),
             0, 0)
         
         //create exit tiles
         this.exit = this.map.createStaticLayer(
             'exit',
-            this.map.addTilesetImage('lpc_farming', 'tiles', 32, 32),
+            this.map.addTilesetImage('lpc_farming', 'tiles2', 32, 32),
             0, 0)
         
         //add collider   
