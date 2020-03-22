@@ -153,8 +153,7 @@ export default class MapNavScene extends Phaser.Scene {
             }
         }
         
-        if (this.dialogueIndex >= LevelIntro.MOVEABLE_INDEX) 
-            this.input.keyboard.on('keyup', handleKeyUp, this);
+        this.input.keyboard.on('keyup', handleKeyUp, this);
     }
 
     setupVoice(annyang)

@@ -162,7 +162,6 @@ export default class Level2Scene extends Phaser.Scene {
             }
         }
         
-        if (this.dialogueIndex >= LevelIntro.MOVEABLE_INDEX) 
             this.input.keyboard.on('keyup', handleKeyUp, this);
     }
 
