@@ -65,7 +65,6 @@ export default class Level2Scene extends Phaser.Scene {
             0, 0)
         
         //add collider   
-        // this.map.setCollision([200], true, true, this.sandBags);
         const wallCollisionsIndices = new Phaser.Structs.Set();
         for (let row of this.sandBags.layer.data) {
             for (let tile of row) {
@@ -131,7 +130,6 @@ export default class Level2Scene extends Phaser.Scene {
                 console.log('reached')
                 this.exitReached = true;
                 this.scene.pause();
-                // this.scene.add(LevelIntro.ClearScene.SCENE_NAME, LevelIntro.ClearScene)
                 this.scene.add('MapNav', MapNavScene);
                 annyang.pause();
 
