@@ -1,6 +1,8 @@
 import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
+import MapNavScene from "./MapNavScene";
+
 
 export default class Level2Scene extends Phaser.Scene {
 
@@ -15,6 +17,7 @@ export default class Level2Scene extends Phaser.Scene {
     ground;
     exit;
     speed = 100;
+    exitReached;
     static LEVEL_NAME = 'LEVEL2';
 
     constructor() {
@@ -55,6 +58,12 @@ export default class Level2Scene extends Phaser.Scene {
             this.map.addTilesetImage('lpc_farming', 'tiles', 32, 32),
             0, 0)
         
+        //create exit tiles
+        this.exit = this.map.createStaticLayer(
+            'exit',
+            this.map.addTilesetImage('lpc_farming', 'tiles', 32, 32),
+            0, 0)
+        
         //add collider   
         // this.map.setCollision([200], true, true, this.sandBags);
         const wallCollisionsIndices = new Phaser.Structs.Set();
@@ -90,6 +99,12 @@ export default class Level2Scene extends Phaser.Scene {
 
         //create collider
         this.physics.add.collider(this.sandBags, this.player);
+        
+        //handle overlap with exit layer
+        this.physics.add.overlap(
+            this.player,
+            this.exit,
+            this.handleReachingExit.bind(this));
 
         //  Graphical debugger
         let debugGraphics = this.add.graphics();
@@ -104,6 +119,28 @@ export default class Level2Scene extends Phaser.Scene {
         
         //  Setup annyang
         this.setupVoice(this.annyang);
+    }
+
+    handleReachingExit(player, tile)
+    {
+        
+        if (tile.index >= 0)
+        {
+            if (!this.exitReached)
+            {
+                console.log('reached')
+                this.exitReached = true;
+                this.scene.pause();
+                // this.scene.add(LevelIntro.ClearScene.SCENE_NAME, LevelIntro.ClearScene)
+                this.scene.add('MapNav', MapNavScene);
+                annyang.pause();
+
+                this.scene.start('MapNav', {
+                    annyang: this.annyang
+                });
+
+            }  
+        }
     }
 
     update(time, delta)
