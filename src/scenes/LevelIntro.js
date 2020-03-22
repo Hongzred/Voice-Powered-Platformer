@@ -243,28 +243,25 @@ export default class LevelIntro extends Phaser.Scene {
     update(time, delta)
     {
         //  console.log('LevelIntro: Updating...');
-        if (this.dialogueIndex >= LevelIntro.MOVEABLE_INDEX) 
-        {
-            if (this.cursors.right.isDown) 
-            {
-                this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
-            }
-    
-            if (this.cursors.left.isDown)
-            {
-                this.player.action.enqueue(TestObject.Actions.GO_LEFT);
-            }
-    
-            if (this.cursors.down.isDown) 
-            {
-                this.player.action.enqueue(TestObject.Actions.GO_DOWN);
-            }
-    
-            if (this.cursors.up.isDown)
-            {
-                this.player.action.enqueue(TestObject.Actions.GO_UP);
+        function handleKeyUp(e) {
+            switch (e.code) {
+                case 'ArrowRight':
+                    this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
+                    break;
+                case 'ArrowLeft':
+                    this.player.action.enqueue(TestObject.Actions.GO_LEFT);
+                    break;
+                case 'ArrowUp':
+                    this.player.action.enqueue(TestObject.Actions.GO_UP);
+                    break;
+                case 'ArrowDown':
+                    this.player.action.enqueue(TestObject.Actions.GO_DOWN);
+                    break;
             }
         }
+        
+        if (this.dialogueIndex >= LevelIntro.MOVEABLE_INDEX) 
+            this.input.keyboard.on('keyup', handleKeyUp, this);
         
     }
 
