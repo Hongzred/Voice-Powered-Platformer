@@ -2,6 +2,7 @@ import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
 import MapNavScene from "./MapNavScene";
+import Level2Scene from "./Level2Scene";
 
 //  Subscene that displays a clear message for a short duration
 class ClearScene extends Phaser.Scene {
@@ -339,8 +340,8 @@ export default class LevelIntro extends Phaser.Scene {
     exitScene()
     {
         this.scene.stop();
-        this.scene.add('MapNav', MapNavScene);
-        this.scene.start('MapNav', {
+        this.scene.add('Level2Scene', Level2Scene);
+        this.scene.start('Level2Scene', {
             annyang: this.annyang
         });
     }
