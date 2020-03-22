@@ -36,7 +36,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     create() {
-
+        console.log('logg');
         // manual controls
         this.cursor = this.input.keyboard.createCursorKeys();
 
@@ -47,19 +47,31 @@ export default class Level2Scene extends Phaser.Scene {
         this.ground = this.map.createStaticLayer(
             'bot',
             this.map.addTilesetImage('lpc_farming', 'tiles', 32, 32),
-            0, 0).setDepth(LevelIntro.DEPTH_GROUND);
+            0, 0)
 
         //create sandbags tiles
         this.sandBags = this.map.createStaticLayer(
             'top',
             this.map.addTilesetImage('lpc_farming', 'tiles', 32, 32),
-            0, 0).setDepth(LevelIntro.DEPTH_WALLS);
+            0, 0)
         
-            
-        this.map.setCollision([200], true, true, this.sandBags);
+        //add collider   
+        // this.map.setCollision([200], true, true, this.sandBags);
+        const wallCollisionsIndices = new Phaser.Structs.Set();
+        for (let row of this.sandBags.layer.data) {
+            for (let tile of row) {
+                if (tile.index >= 0) wallCollisionsIndices.set(tile.index);
+            }
+        }
+        this.map.setCollision(
+            wallCollisionsIndices.getArray(),
+            true,
+            true,
+            this.sandBags
+        )
 
         //create player
-        this.player = this.add.existing(new TestObject(this, 16 + 8 * 32, 16 + 8 * 32, 'player'))
+        this.player = this.add.existing(new TestObject(this, 16 + 10 * 32, 16 + 3 * 32, 'player'))
         this.physics.add.existing(this.player);
         this.player.setAngle(270);
 

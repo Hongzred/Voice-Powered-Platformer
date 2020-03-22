@@ -56,11 +56,11 @@ export default class MenuScene extends Phaser.Scene {
     goPlay() {
         this.scene.add('Game', GameScene);
         this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro)
-        this.scene.add('level2', Level2Scene)
+        this.scene.add('Level2Scene', Level2Scene)
 
         annyang.pause();
 
-        this.scene.start('level2', {
+        this.scene.start('Level2Scene', {
             annyang: annyang
         });
     } 
