@@ -66,14 +66,14 @@ export default class LevelIntro extends Phaser.Scene {
     static START_Y = 275;
     static MOVEABLE_INDEX = 3;
     static DIALOGUE = [
-        '\n\n\n\n\n\nWelcome to VPP!\n\n\n\n(Click or say "next" to continue)',
-        '\n\n\n\n\n\nThis is you.',
-        '\n\n\n\n\nYou can move by using the arrow keys.',
-        '\n\nYou can also move by using voice commands:\n\ntop\ndown\nleft\nright',
-        '\n\n\n\n\nGive it a try!\n\n\n\n\n(Click or say "next" to continue)',
-        '\n\nYour commands can be queued up if they are inputted quickly. Try the sequence "left. right. left. right"',
-        '\n\n\n\nThe objective of each level is to get to the exit.',
-        '\n\n\nTry getting to the wooden bridge to advance to the next level!'
+        'Welcome to VPP!\n\n(Click or say "next" to continue)',
+        'This is you.',
+        'You can move by using the arrow keys.',
+        'You can also move by using voice commands:\n\ntop, down\nleft, right',
+        'Give it a try!\n\n(Click or say "next" to continue)',
+        'Your commands can be queued up if they are inputted quickly. \n\nTry the sequence "left. right. left. right"',
+        'The objective of each level is to get to the exit.',
+        'Try getting to the wooden bridge to advance to the next level!'
     ];
     
     annyang;            //  annyang
@@ -275,15 +275,16 @@ export default class LevelIntro extends Phaser.Scene {
                                 .setFontSize(24)
                                 .setColor('white')
                                 .setFontStyle('italic')
-                                .setOrigin(1.0, 0.5)
-                                .setPosition(this.cameras.main.width, this.cameras.main.height / 2)
+                                .setOrigin(0.5, 1)
+                                .setPosition(
+                                    this.cameras.main.width / 2, 
+                                    this.cameras.main.height)
                                 .setDepth(LevelIntro.DEPTH_DIALOGUE)
-                                .setWordWrapWidth(200)
-                                .setFixedSize(300, 400)
+                                .setFixedSize(this.cameras.main.width, this.cameras.main.height / 3)
                                 .setBackgroundColor('rgba(0,0,0,0.5)')
-                                .setAlign('center')
                                 .setLineSpacing(5)
-                                .setPadding(5, 20, 5, 20)
+                                .setPadding(10, 10, 10, 10)
+                                .setWordWrapWidth(this.cameras.main.width)
                                 .setScrollFactor(0, 0);
         
         this.input.on('pointerup', () => {
