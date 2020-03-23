@@ -4,6 +4,7 @@ import config from "../config/config";
 import MapNavScene from "./MapNavScene";
 import LevelIntro from "./LevelIntro";
 import skyImg from "../assets/sky.png";
+import Level2Scene from "./Level2Scene";
 
 export default class MenuScene extends Phaser.Scene {
     constructor () {
