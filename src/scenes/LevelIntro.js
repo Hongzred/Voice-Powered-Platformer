@@ -3,7 +3,12 @@ import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
 import MapNavScene from "./MapNavScene";
 import Level2Scene from "./Level2Scene";
-
+import tileset_1 from "../assets/level_intro_set1.png";
+import introLevel from "../assets/VPP-level-intro.json";
+import GoLeft from "../assets/left.png";
+import GoRight from "../assets/right.png";
+import GoUp from "../assets/up.png";
+import GoDown from "../assets/down.png"
 //  Subscene that displays a clear message for a short duration
 class ClearScene extends Phaser.Scene {
 
@@ -102,16 +107,16 @@ export default class LevelIntro extends Phaser.Scene {
     preload()
     {
         //  Load map sprite
-        this.load.image('tile_set_1', '/src/assets/level_intro_set1.png');
+        this.load.image('tile_set_1', tileset_1);
 
         //  Load map exported from Tiled
-        this.load.tilemapTiledJSON('introLevel', '/src/assets/VPP-level-intro.json');
+        this.load.tilemapTiledJSON('introLevel', introLevel);
 
         //  Command sprites
-        this.load.image(TestObject.Actions.GO_LEFT, './src/assets/left.png');
-        this.load.image(TestObject.Actions.GO_RIGHT, './src/assets/right.png');
-        this.load.image(TestObject.Actions.GO_UP, './src/assets/up.png');
-        this.load.image(TestObject.Actions.GO_DOWN, './src/assets/down.png');
+        this.load.image(TestObject.Actions.GO_LEFT, GoLeft);
+        this.load.image(TestObject.Actions.GO_RIGHT, GoRight);
+        this.load.image(TestObject.Actions.GO_UP, GoUp);
+        this.load.image(TestObject.Actions.GO_DOWN, GoDown);
 
     }
 

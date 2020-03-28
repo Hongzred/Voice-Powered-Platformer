@@ -5,6 +5,7 @@ import MapNavScene from "./MapNavScene";
 import LevelIntro from "./LevelIntro";
 import skyImg from "../assets/sky.png";
 import Level2Scene from "./Level2Scene";
+import player from "../assets/car.png";
 
 export default class MenuScene extends Phaser.Scene {
     constructor () {
@@ -13,7 +14,7 @@ export default class MenuScene extends Phaser.Scene {
 
     preload() {
         this.load.image("sky", skyImg);
-        this.load.image('player', '/src/assets/car.png');
+        this.load.image('player', player);
     }
     create() {
         this.add.image(400, 300, 'sky');

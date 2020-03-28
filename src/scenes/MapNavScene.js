@@ -1,7 +1,14 @@
 import "phaser";
 import TestObject from "../objects/characters/TestObject"
 import Overlay from "../objects/Overlay"
-
+import tiles from "../assets/VPP_level_1_tilemap.png";
+import coin from "../assets/coinGold.png";
+import lock from "../assets/lock_yellow.png";
+import map from "../assets/VPP Level 1 Demo 2.json";
+import GoLeft from "../assets/left.png";
+import GoRight from "../assets/right.png";
+import GoUp from "../assets/up.png";
+import GoDown from "../assets/down.png"
 export default class MapNavScene extends Phaser.Scene {
 
     static DEPTH_COMMAND;
@@ -31,15 +38,15 @@ export default class MapNavScene extends Phaser.Scene {
 
     preload() 
     {
-        this.load.image('tiles', '/src/assets/VPP_level_1_tilemap.png',  { frameWidth: 32, frameHeight: 32 });
-        this.load.image('coin', '/src/assets/coinGold.png', { frameWidth: 32, frameHeight: 32});
-        this.load.image('lock', '/src/assets/lock_yellow.png', { frameWidth: 70, frameHeight: 70});
-        this.load.tilemapTiledJSON('map', '/src/assets/VPP Level 1 Demo 2.json')
+        this.load.image('tiles', tiles,  { frameWidth: 32, frameHeight: 32 });
+        this.load.image('coin', coin, { frameWidth: 32, frameHeight: 32});
+        this.load.image('lock', lock, { frameWidth: 70, frameHeight: 70});
+        this.load.tilemapTiledJSON('map', map)
 
-        this.load.image(TestObject.Actions.GO_LEFT, './src/assets/left.png');
-        this.load.image(TestObject.Actions.GO_RIGHT, './src/assets/right.png');
-        this.load.image(TestObject.Actions.GO_UP, './src/assets/up.png');
-        this.load.image(TestObject.Actions.GO_DOWN, './src/assets/down.png');
+        this.load.image(TestObject.Actions.GO_LEFT, GoLeft);
+        this.load.image(TestObject.Actions.GO_RIGHT, GoRight);
+        this.load.image(TestObject.Actions.GO_UP, GoUp);
+        this.load.image(TestObject.Actions.GO_DOWN, GoDown);
     }
 
     create()
