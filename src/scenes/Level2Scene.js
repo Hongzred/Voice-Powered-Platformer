@@ -1,7 +1,7 @@
 import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
-import MapNavScene from "./MapNavScene";
+import Level3 from "./Level3";
 import tiles2 from "../assets/lpc_farming.png";
 import map2 from "../assets/demo-level2.json";
 import GoLeft from "../assets/left.png";
@@ -30,6 +30,7 @@ export default class Level2Scene extends Phaser.Scene {
 
     init(data) {
         this.annyang = data.annyang;
+        this.exitReached = false;
     }
 
     preload() {
@@ -134,10 +135,10 @@ export default class Level2Scene extends Phaser.Scene {
                 console.log('reached')
                 this.exitReached = true;
                 this.scene.pause();
-                this.scene.add('MapNav', MapNavScene);
+                this.scene.add(Level3.SCENE_NAME, Level3);
                 annyang.pause();
 
-                this.scene.start('MapNav', {
+                this.scene.start(Level3.SCENE_NAME, {
                     annyang: this.annyang
                 });
 
