@@ -1,7 +1,7 @@
 import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
-import MapNavScene from "./MapNavScene";
+import ClearScene from "./ClearScene"
 import Level2Scene from "./Level2Scene";
 import tileset_1 from "../assets/level_intro_set1.png";
 import introLevel from "../assets/VPP-level-intro.json";
@@ -9,57 +9,8 @@ import GoLeft from "../assets/left.png";
 import GoRight from "../assets/right.png";
 import GoUp from "../assets/up.png";
 import GoDown from "../assets/down.png"
-//  Subscene that displays a clear message for a short duration
-class ClearScene extends Phaser.Scene {
-
-    static SCENE_NAME = 'LEVEL_INTRO_CLEAR_SCENE';
-    static MESSAGE = 'CLEARED!';
-    static DEPTH = 1000;
-    static FONT_SIZE = 96;
-    static FONT_COLOR = 'white';
-    static FONT_STYLE = 'italic bold';
-    static ALIGN = 'center';
-    static SCENE_DURATION_MS = 3000;
-
-    constructor()
-    {
-        super({key : ClearScene.SCENE_NAME})
-    }
-
-    create()
-    {
-
-        this.add
-            .text()
-            .setText(ClearScene.MESSAGE)
-            .setFontSize(ClearScene.FONT_SIZE)
-            .setColor(ClearScene.FONT_COLOR)
-            .setFontStyle(ClearScene.FONT_STYLE)
-            .setOrigin(0.5, 0.5)
-            .setPosition(this.cameras.main.width / 2, this.cameras.main.height / 2)
-            .setDepth(ClearScene.DEPTH)
-            .setAlign(ClearScene.ALIGN)
-            .setScrollFactor(0, 0);
-
-        this.time.addEvent({
-            delay: ClearScene.SCENE_DURATION_MS,
-            callback: this.exitScene.bind(this)
-        });
-
-    }
-
-    exitScene()
-    {
-        this.scene.stop();
-        this.scene.resume(LevelIntro.LEVEL_NAME);
-    }
-
-}
 
 export default class LevelIntro extends Phaser.Scene {
-    
-    static ClearScene = ClearScene;
-
     static DEPTH_WATER = 0;
     static DEPTH_GROUND = 50;
     static DEPTH_WALLS = 100;
@@ -334,8 +285,13 @@ export default class LevelIntro extends Phaser.Scene {
             {
                 this.exitReached = true;
                 this.scene.pause();
-                this.scene.add(LevelIntro.ClearScene.SCENE_NAME, LevelIntro.ClearScene)
-                this.scene.launch(LevelIntro.ClearScene.SCENE_NAME)
+                if (!this.scene.get(ClearScene.SCENE_NAME))
+                {
+                    this.scene.add(ClearScene.SCENE_NAME, ClearScene, false, {
+                        parentSceneName: LevelIntro.LEVEL_NAME
+                    });
+                }
+                this.scene.launch(ClearScene.SCENE_NAME)
             }  
         }
     }
