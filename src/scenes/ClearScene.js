@@ -45,7 +45,6 @@ export default class ClearScene extends Phaser.Scene
 
     exitScene()
     {
-        console.log('here', this.parentSceneName)
         this.scene.stop();
         this.scene.resume(this.parentSceneName);
     }

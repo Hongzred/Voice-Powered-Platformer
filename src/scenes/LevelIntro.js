@@ -37,7 +37,7 @@ export default class LevelIntro extends Phaser.Scene {
     cursors;            //  Manual control
     map;                //  Holds the tiled map
     dialogueText;       //  Holds dialogue text object
-    dialogueIndex = 0;  //  Progress of current dialogue
+    dialogueIndex;      //  Progress of current dialogue
     commandQueue;       //  Holds TestObject.ActionQueue
     runningTween;
     gateLayer;
@@ -53,6 +53,8 @@ export default class LevelIntro extends Phaser.Scene {
     {
         //  Get annyang from previous scene
         this.annyang = data.annyang;
+        this.dialogueIndex = 0;
+        this.exitReached = false;
     }
 
     preload()
@@ -80,9 +82,6 @@ export default class LevelIntro extends Phaser.Scene {
         //  Add level overlay
         this.add
             .existing(new Overlay(this, LevelIntro.LEVEL_NAME));
-
-        //  Manual controls
-        this.cursors = this.input.keyboard.createCursorKeys();
 
         //  Create layout
         this.map = this.make.tilemap({
@@ -198,7 +197,6 @@ export default class LevelIntro extends Phaser.Scene {
 
     update(time, delta)
     {
-        //  console.log('LevelIntro: Updating...');
         function handleKeyUp(e) {
             switch (e.code) {
                 case 'ArrowRight':
@@ -285,13 +283,20 @@ export default class LevelIntro extends Phaser.Scene {
             {
                 this.exitReached = true;
                 this.scene.pause();
-                if (!this.scene.get(ClearScene.SCENE_NAME))
+                const clearSceneData = {
+                    parentSceneName: LevelIntro.LEVEL_NAME
+                };
+                const clearScene = this.scene.get(ClearScene.SCENE_NAME);
+                if (!clearScene)
                 {
-                    this.scene.add(ClearScene.SCENE_NAME, ClearScene, false, {
-                        parentSceneName: LevelIntro.LEVEL_NAME
-                    });
-                }
-                this.scene.launch(ClearScene.SCENE_NAME)
+                    this.scene.add(ClearScene.SCENE_NAME, ClearScene, false, clearSceneData);
+                    this.scene.launch(ClearScene.SCENE_NAME);
+                } 
+                else
+                {
+                    clearScene.scene.bringToTop();
+                    clearScene.scene.restart(clearSceneData);
+                }     
             }  
         }
     }
@@ -299,10 +304,18 @@ export default class LevelIntro extends Phaser.Scene {
     exitScene()
     {
         this.scene.stop();
-        this.scene.add('Level2Scene', Level2Scene);
-        this.scene.start('Level2Scene', {
-            annyang: this.annyang
-        });
+        
+        const level2Scene = this.scene.get('Level2Scene', Level2Scene);
+        if (!level2Scene)
+        {
+            this.scene.add('Level2Scene', Level2Scene, false, {annyang: this.annyang});
+            this.scene.launch('Level2Scene');
+        }
+        else
+        {
+            level2Scene.scene.bringToTop();
+            level2Scene.scene.restart({annyang: this.annyang});
+        }
     }
 
     setupVoice(annyang)
