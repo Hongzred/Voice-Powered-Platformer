@@ -14,6 +14,7 @@ export default class Level2Scene extends Phaser.Scene {
     static DEPTH_GROUND = 50;
     static DEPTH_WALLS = 100;
 
+    recognizer;         //  TensorFlow recognizer
     controls;
     map;
     player;
@@ -29,8 +30,8 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     init(data) {
-        this.annyang = data.annyang;
         this.exitReached = false;
+        this.setupVoice();
     }
 
     preload() {
@@ -121,8 +122,6 @@ export default class Level2Scene extends Phaser.Scene {
             .setBounds(0, 0, 800, 800);
         this.cameras.main.startFollow(this.player);
         
-        //  Setup annyang
-        this.setupVoice(this.annyang);
     }
 
     handleReachingExit(player, tile)
@@ -133,14 +132,12 @@ export default class Level2Scene extends Phaser.Scene {
             if (!this.exitReached)
             {
                 console.log('reached')
+                this.recognizer.stopListening();
                 this.exitReached = true;
                 this.scene.pause();
                 this.scene.add(Level4.SCENE_NAME, Level4);
-                annyang.pause();
 
-                this.scene.start(Level4.SCENE_NAME, {
-                    annyang: this.annyang
-                });
+                this.scene.start(Level4.SCENE_NAME, {});
 
             }  
         }
@@ -168,25 +165,56 @@ export default class Level2Scene extends Phaser.Scene {
             this.input.keyboard.on('keyup', handleKeyUp, this);
     }
 
-    setupVoice(annyang)
+    setupVoice()
     {
-        let commands = {
-            'l*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_LEFT);
-            },
-            'r*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
-            },
-            't*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_UP);
-            },
-            'd*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_DOWN);
-            }
+        const self = this;
+        let recognizer;
 
+        function predictWord() 
+        {
+            // Array of words that the recognizer is trained to recognize.
+            self.recognizer = recognizer;
+            const words = recognizer.wordLabels();
+            recognizer.listen(({scores}) => {
+                // Turn scores into a list of (score,word) pairs.
+                scores = Array.from(scores).map((s, i) => ({score: s, word: words[i]}));
+                // Find the most probable word.
+                scores.sort((s1, s2) => s2.score - s1.score);
+                self.handleVoice(scores[0].word);
+            }, {
+                probabilityThreshold: 0.85,
+                overlapFactor: 0.30
+            });
         }
-        annyang.removeCommands();
-        annyang.addCommands(commands);
-        annyang.start();
+
+        async function listen() 
+        {
+            recognizer = speechCommands.create('BROWSER_FFT', 'directional4w');
+            await recognizer.ensureModelLoaded();
+            predictWord();
+        }
+           
+        listen();
     }
+
+    handleVoice(voiceCommand)
+    {
+        if (voiceCommand === 'left')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_LEFT);
+        }
+        else if (voiceCommand === 'right')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
+        }
+        else if (voiceCommand === 'up')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_UP);
+        }
+        else if (voiceCommand === 'down')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_DOWN);
+        }
+    }
+
 }

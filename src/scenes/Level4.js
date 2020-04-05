@@ -46,7 +46,7 @@ export default class Level4 extends Phaser.Scene
         Walls_Bottom: 'Walls_Bottom'
     };
 
-    annyang;
+    recognizer;         //  TensorFlow recognizer
     cursors;
     exitLayer;
     commandQueue;
@@ -62,8 +62,8 @@ export default class Level4 extends Phaser.Scene
     {
         //  Handle data pass from previous scene\
         console.log('Level4:    init()');
-        this.annyang = data.annyang;
         this.exitReached = false;
+        this.setupVoice()
     }  
 
     preload()
@@ -268,17 +268,68 @@ export default class Level4 extends Phaser.Scene
         const introScene = this.scene.get(LevelIntro.LEVEL_NAME);
         if (!introScene)
         {
-            this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro, false, {annyang: this.annyang});
+            this.recognizer.stopListening();
+            this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro, false, {});
             this.scene.launch(LevelIntro.LEVEL_NAME);
         }
         else
         {
             introScene.scene.bringToTop();
-            introScene.scene.restart({
-                annyang: this.annyang
+            introScene.scene.restart({});
+        }
+
+    }
+
+    setupVoice()
+    {
+        const self = this;
+        let recognizer;
+
+        function predictWord() 
+        {
+            // Array of words that the recognizer is trained to recognize.
+            self.recognizer = recognizer;
+            const words = recognizer.wordLabels();
+            recognizer.listen(({scores}) => {
+                // Turn scores into a list of (score,word) pairs.
+                scores = Array.from(scores).map((s, i) => ({score: s, word: words[i]}));
+                // Find the most probable word.
+                scores.sort((s1, s2) => s2.score - s1.score);
+                self.handleVoice(scores[0].word);
+            }, {
+                probabilityThreshold: 0.85,
+                overlapFactor: 0.30
             });
         }
 
+        async function listen() 
+        {
+            recognizer = speechCommands.create('BROWSER_FFT', 'directional4w');
+            await recognizer.ensureModelLoaded();
+            predictWord();
+        }
+           
+        listen();
+    }
+
+    handleVoice(voiceCommand)
+    {
+        if (voiceCommand === 'left')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_LEFT);
+        }
+        else if (voiceCommand === 'right')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
+        }
+        else if (voiceCommand === 'up')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_UP);
+        }
+        else if (voiceCommand === 'down')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_DOWN);
+        }
     }
 
 }

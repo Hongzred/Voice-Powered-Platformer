@@ -1,3 +1,5 @@
+import "@babel/polyfill";
+
 import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
@@ -23,17 +25,17 @@ export default class LevelIntro extends Phaser.Scene {
     static START_Y = 275;
     static MOVEABLE_INDEX = 3;
     static DIALOGUE = [
-        'Welcome to VPP!\n\n(Click or say "next" to continue)',
+        'Welcome to VPP!\n\n(Click or say anything to continue)',
         'This is you.',
         'You can move by using the arrow keys.',
         'You can also move by using voice commands:\n\ntop, down\nleft, right',
-        'Give it a try!\n\n(Click or say "next" to continue)',
+        'Give it a try!\n\n(Click or say anything to continue)',
         'Your commands can be queued up if they are inputted quickly. \n\nTry the sequence "left. right. left. right"',
         'The objective of each level is to get to the exit.',
         'Try getting to the wooden bridge to advance to the next level!'
     ];
     
-    annyang;            //  annyang
+    recognizer;         //  TensorFlow recognizer
     cursors;            //  Manual control
     map;                //  Holds the tiled map
     dialogueText;       //  Holds dialogue text object
@@ -51,10 +53,11 @@ export default class LevelIntro extends Phaser.Scene {
 
     init(data)
     {
-        //  Get annyang from previous scene
-        this.annyang = data.annyang;
+        //  Initialize
         this.dialogueIndex = 0;
         this.exitReached = false;
+
+        this.setupVoice()
     }
 
     preload()
@@ -190,7 +193,6 @@ export default class LevelIntro extends Phaser.Scene {
             .startFollow(this.player);
 
         this.setupDialogue();
-        this.setupVoice(this.annyang);
         this.events.on('resume', this.exitScene.bind(this));
 
     }
@@ -308,40 +310,72 @@ export default class LevelIntro extends Phaser.Scene {
         const level2Scene = this.scene.get('Level2Scene', Level2Scene);
         if (!level2Scene)
         {
-            this.scene.add('Level2Scene', Level2Scene, false, {annyang: this.annyang});
+            this.recognizer.stopListening();
+            this.scene.add('Level2Scene', Level2Scene, false, {});
             this.scene.launch('Level2Scene');
         }
         else
         {
             level2Scene.scene.bringToTop();
-            level2Scene.scene.restart({annyang: this.annyang});
+            level2Scene.scene.restart({});
         }
     }
 
-    setupVoice(annyang)
+    setupVoice()
     {
-        let self = this;
-        let commands = {
-            'l*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_LEFT);
-            },
-            'r*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
-            },
-            't*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_UP);
-            },
-            'd*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_DOWN);
-            },
-            'n*rest' : rest => {
-                this.input.emit('pointerup');
-            }
+        const self = this;
+        let recognizer;
 
+        function predictWord() 
+        {
+            // Array of words that the recognizer is trained to recognize.
+            self.recognizer = recognizer;
+            const words = recognizer.wordLabels();
+            recognizer.listen(({scores}) => {
+                // Turn scores into a list of (score,word) pairs.
+                scores = Array.from(scores).map((s, i) => ({score: s, word: words[i]}));
+                // Find the most probable word.
+                scores.sort((s1, s2) => s2.score - s1.score);
+                self.handleVoice(scores[0].word);
+            }, {
+                probabilityThreshold: 0.85,
+                overlapFactor: 0.30
+            });
         }
-        annyang.removeCommands();
-        annyang.addCommands(commands);
-        annyang.start();
+
+        async function listen() 
+        {
+            recognizer = speechCommands.create('BROWSER_FFT', 'directional4w');
+            await recognizer.ensureModelLoaded();
+            predictWord();
+        }
+           
+        listen();
+    }
+
+    handleVoice(voiceCommand)
+    {
+        if (this.dialogueIndex >= LevelIntro.MOVEABLE_INDEX)
+        {
+            if (voiceCommand === 'left')
+            {
+                this.player.action.enqueue(TestObject.Actions.GO_LEFT);
+            }
+            else if (voiceCommand === 'right')
+            {
+                this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
+            }
+            else if (voiceCommand === 'up')
+            {
+                this.player.action.enqueue(TestObject.Actions.GO_UP);
+            }
+            else if (voiceCommand === 'down')
+            {
+                this.player.action.enqueue(TestObject.Actions.GO_DOWN);
+            }
+        }
+       
+        this.input.emit('pointerup');
     }
 
 }
