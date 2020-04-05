@@ -109,7 +109,7 @@ export default class TestObject extends Phaser.Physics.Arcade.Sprite {
     action;   //  Stores action properties and methods
     scene;
 
-    SPEED = 75;
+    SPEED = 200;
 
     constructor(scene, x, y, texture) 
     {

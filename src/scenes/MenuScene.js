@@ -47,7 +47,6 @@ export default class MenuScene extends Phaser.Scene {
         this.createMouseInput();
         this.createKeyboardInput();
         
-        annyang.start();
     }
 
     createMouseInput() {
@@ -70,11 +69,7 @@ export default class MenuScene extends Phaser.Scene {
         this.scene.add('Game', GameScene);
         this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro)
 
-        annyang.pause();
-
         this.scene.stop();
-        this.scene.start(LevelIntro.LEVEL_NAME, {
-            annyang: annyang
-        });
+        this.scene.start(LevelIntro.LEVEL_NAME, {});
     } 
 }
