@@ -1,14 +1,16 @@
 import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
-import Level4 from "./Level4";
+import Level4Scene from "./Level4";
 import tiles3 from "../assets/map3-tiles.png";
 import map3 from "../assets/level3.json";
 import GoLeft from "../assets/left.png";
 import GoRight from "../assets/right.png";
 import GoUp from "../assets/up.png";
 import GoDown from "../assets/down.png"
-export default class Level2Scene extends Phaser.Scene {
+import ClearScene from "./ClearScene";
+
+export default class Level3Scene extends Phaser.Scene {
 
     static DEPTH_COMMAND;
     static DEPTH_GROUND = 50;
@@ -85,14 +87,14 @@ export default class Level2Scene extends Phaser.Scene {
         )
 
         //create player
-        this.player = this.add.existing(new TestObject(this, 16 + 7 * 32, 16 + 19 * 32, 'player'))
+        this.player = this.add.existing(new TestObject(this, 16 + 7 * 32, 16 + 18 * 32, 'player'))
         this.physics.add.existing(this.player);
         this.player.setAngle(270);
 
         //  Add action queue sprite to scene
         this.add
             .existing(new TestObject.ActionQueue(
-                this.physics.world, this, this.player, Level2Scene.DEPTH_COMMAND,
+                this.physics.world, this, this.player, Level3Scene.DEPTH_COMMAND,
                 TestObject.Actions.GO_LEFT, 
                 TestObject.Actions.GO_RIGHT, 
                 TestObject.Actions.GO_DOWN, 
@@ -121,7 +123,8 @@ export default class Level2Scene extends Phaser.Scene {
             .main
             .setBounds(0, 0, 800, 800);
         this.cameras.main.startFollow(this.player);
-        
+        this.events.on('resume', this.exitScene.bind(this));
+
     }
 
     handleReachingExit(player, tile)
@@ -132,14 +135,44 @@ export default class Level2Scene extends Phaser.Scene {
             if (!this.exitReached)
             {
                 console.log('reached')
-                this.recognizer.stopListening();
                 this.exitReached = true;
                 this.scene.pause();
-                this.scene.add(Level4.SCENE_NAME, Level4);
+                const clearSceneData = {
+                    parentSceneName: Level3Scene.SCENE_NAME
+                };
+                const clearScene = this.scene.get(ClearScene.SCENE_NAME);
+                if (!clearScene)
+                {
+                    this.scene.add(ClearScene.SCENE_NAME, ClearScene, false, clearSceneData);
+                    this.scene.launch(ClearScene.SCENE_NAME);
+                    this.recognizer.stopListening();
+                } else 
+                {
+                    clearScene.scene.bringToTop();
+                    clearScene.scene.restart(clearSceneData);
+                }
 
-                this.scene.start(Level4.SCENE_NAME, {});
+                // this.scene.start(Level4Scene.SCENE_NAME, {});
 
             }  
+        }
+    }
+
+    exitScene()
+    {
+        this.scene.stop();
+        
+        const level4Scene = this.scene.get(Level4Scene.SCENE_NAME, Level4Scene);
+        if (!level4Scene)
+        {
+            this.recognizer.stopListening();
+            this.scene.add(Level4Scene.SCENE_NAME, Level4Scene, false, {});
+            this.scene.launch(Level4Scene.SCENE_NAME);
+        }
+        else
+        {
+            level4Scene.scene.bringToTop();
+            level4Scene.scene.restart({});
         }
     }
 

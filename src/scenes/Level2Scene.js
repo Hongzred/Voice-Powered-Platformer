@@ -8,6 +8,8 @@ import GoLeft from "../assets/left.png";
 import GoRight from "../assets/right.png";
 import GoUp from "../assets/up.png";
 import GoDown from "../assets/down.png"
+import ClearScene from "./ClearScene";
+
 export default class Level2Scene extends Phaser.Scene {
 
     static DEPTH_COMMAND;
@@ -23,7 +25,7 @@ export default class Level2Scene extends Phaser.Scene {
     exit;
     speed = 100;
     exitReached;
-    static LEVEL_NAME = 'LEVEL2';
+    static LEVEL_NAME = 'Level2Scene';
 
     constructor() {
         super({key: 'Level2Scene'});
@@ -121,7 +123,8 @@ export default class Level2Scene extends Phaser.Scene {
             .main
             .setBounds(0, 0, 800, 800);
         this.cameras.main.startFollow(this.player);
-        
+        this.events.on('resume', this.exitScene.bind(this));
+
     }
 
     handleReachingExit(player, tile)
@@ -134,12 +137,42 @@ export default class Level2Scene extends Phaser.Scene {
                 console.log('reached')
                 this.exitReached = true;
                 this.scene.pause();
-                this.scene.add(Level3Scene.SCENE_NAME, Level3Scene);
-                this.recognizer.stopListening();
+                const clearSceneData = {
+                    parentSceneName: Level2Scene.LEVEL_NAME
+                };
+                const clearScene = this.scene.get(ClearScene.SCENE_NAME);
+                if (!clearScene)
+                {
+                    this.scene.add(ClearScene.SCENE_NAME, ClearScene, false, clearSceneData);
+                    this.scene.launch(ClearScene.SCENE_NAME);
+                    this.recognizer.stopListening();
+                } else
+                {
+                    clearScene.scene.bringToTop();
+                    clearScene.scene.restart(clearSceneData);
+                }
 
-                this.scene.start(Level3Scene.SCENE_NAME, {});
+                // this.scene.start(Level3Scene.SCENE_NAME, {});
 
             }  
+        }
+    }
+
+    exitScene()
+    {
+        this.scene.stop();
+        
+        const level3Scene = this.scene.get('Level3Scene', Level3Scene);
+        if (!level3Scene)
+        {
+            this.recognizer.stopListening();
+            this.scene.add('Level3Scene', Level3Scene, false, {});
+            this.scene.launch('Level3Scene');
+        }
+        else
+        {
+            level3Scene.scene.bringToTop();
+            level3Scene.scene.restart({});
         }
     }
 
