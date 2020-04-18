@@ -5,7 +5,7 @@ that includes hot-reloading for development and production-ready builds.
 
 Loading images via JavaScript module `import` is also supported.
 
-# Click [Here](https://hongzred.github.io/Voice-Powered-Platformer/dist/index.html) to View The App
+## Click [Here](https://hongzred.github.io/Voice-Powered-Platformer/) to View The App
 
 ## Requirements
 
