@@ -1,7 +1,7 @@
 import "phaser";
 
 import ClearScene from "./ClearScene";
-import LevelIntro from "./LevelIntro";
+import Level5 from "./Level5";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
 
@@ -265,12 +265,12 @@ export default class Level4 extends Phaser.Scene
     exitScene()
     {
         this.scene.stop();
-        const introScene = this.scene.get(LevelIntro.LEVEL_NAME);
+        const introScene = this.scene.get(Level5.SCENE_NAME);
         if (!introScene)
         {
             this.recognizer.stopListening();
-            this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro, false, {});
-            this.scene.launch(LevelIntro.LEVEL_NAME);
+            this.scene.add(Level5.SCENE_NAME, Level5, false, {});
+            this.scene.launch(Level5.SCENE_NAME);
         }
         else
         {
