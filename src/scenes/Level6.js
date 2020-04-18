@@ -1,7 +1,6 @@
 import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
-import Level5Scene from "./Level5";
 import tiles6 from "../assets/tileset_town_multi_v002.png";
 import map6 from "../assets/level6.json";
 import GoLeft from "../assets/left.png";
@@ -19,7 +18,8 @@ export default class Level6Scene extends Phaser.Scene {
     static DEPTH_WALLS = 100;
     static MAP_WIDTH = 40*32 + 16;
     static MAP_HEIGHT = 40*32 + 16;
-
+    static SCENE_NAME = 'Level6Scene';
+    
     recognizer;         //  TensorFlow recognizer
     controls;
     map;
@@ -29,7 +29,7 @@ export default class Level6Scene extends Phaser.Scene {
     exit;
     speed = 100;
     exitReached;
-    static SCENE_NAME = 'Level6Scene';
+
 
     constructor() {
         super({key: 'Level6Scene'});
@@ -147,7 +147,7 @@ export default class Level6Scene extends Phaser.Scene {
                 this.exitReached = true;
                 this.scene.pause();
                 const clearSceneData = {
-                    parentSceneName: Level5Scene.SCENE_NAME
+                    parentSceneName: Level6Scene.SCENE_NAME
                 };
                 const clearScene = this.scene.get(ClearScene.SCENE_NAME);
                 if (!clearScene)

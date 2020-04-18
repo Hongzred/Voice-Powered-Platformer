@@ -227,7 +227,7 @@ export default class Level5 extends Phaser.Scene
     {
         this.scene.stop();
         
-        const level6Scene = this.scene.get(Level6cene.SCENE_NAME, Level6Scene);
+        const level6Scene = this.scene.get(Level6Scene.SCENE_NAME, Level6Scene);
         if (!level6Scene)
         {
             this.recognizer.stopListening();
