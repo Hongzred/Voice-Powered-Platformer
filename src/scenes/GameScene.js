@@ -230,7 +230,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     if (
-      // this.cursors.up.isDown ||
       this.cursors.up.isDown &&
       this.player.body.touching.down
     ) {
@@ -248,7 +247,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     if (
-      // this.cursors.up.isDown ||
       this.cursors.up.isDown &&
       this.player.body.touching.down
     ) {

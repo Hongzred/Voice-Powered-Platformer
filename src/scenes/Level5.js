@@ -1,10 +1,9 @@
 import "phaser";
 
 import ClearScene from "./ClearScene";
-import LevelIntro from "./LevelIntro";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
-
+import Level6Scene from "./Level6";
 import level5TileSet from "../assets/level5.png";
 import MapJSON from "../assets/VPP-level5.json";
 import GoLeft from "../assets/left.png";
@@ -227,20 +226,19 @@ export default class Level5 extends Phaser.Scene
     exitScene()
     {
         this.scene.stop();
-        //  Launch the next scene
-        const introScene = this.scene.get(LevelIntro.LEVEL_NAME);
-        if (!introScene)
+        
+        const level6Scene = this.scene.get(Level6cene.SCENE_NAME, Level6Scene);
+        if (!level6Scene)
         {
             this.recognizer.stopListening();
-            this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro, false, {});
-            this.scene.launch(LevelIntro.LEVEL_NAME);
+            this.scene.add(Level6Scene.SCENE_NAME, Level6Scene, false, {});
+            this.scene.launch(Level6Scene.SCENE_NAME);
         }
         else
         {
-            introScene.scene.bringToTop();
-            introScene.scene.restart({});
+            level6Scene.scene.bringToTop();
+            level6Scene.scene.restart({});
         }
-
     }
 
     update(time, delta)
