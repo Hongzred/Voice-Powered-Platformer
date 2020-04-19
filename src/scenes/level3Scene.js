@@ -152,8 +152,6 @@ export default class Level3Scene extends Phaser.Scene {
                     clearScene.scene.restart(clearSceneData);
                 }
 
-                // this.scene.start(Level4Scene.SCENE_NAME, {});
-
             }  
         }
     }

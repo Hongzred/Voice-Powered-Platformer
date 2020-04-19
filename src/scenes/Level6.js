@@ -1,21 +1,25 @@
 import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
-import Level3Scene from "./Level3Scene";
-import tiles2 from "../assets/lpc_farming.png";
-import map2 from "../assets/demo-level2.json";
+import tiles6 from "../assets/tileset_town_multi_v002.png";
+import map6 from "../assets/level6.json";
 import GoLeft from "../assets/left.png";
 import GoRight from "../assets/right.png";
 import GoUp from "../assets/up.png";
 import GoDown from "../assets/down.png"
 import ClearScene from "./ClearScene";
+import LevelIntro from "./LevelIntro";
 
-export default class Level2Scene extends Phaser.Scene {
+
+export default class Level6Scene extends Phaser.Scene {
 
     static DEPTH_COMMAND;
     static DEPTH_GROUND = 50;
     static DEPTH_WALLS = 100;
-
+    static MAP_WIDTH = 40*32 + 16;
+    static MAP_HEIGHT = 40*32 + 16;
+    static SCENE_NAME = 'Level6Scene';
+    
     recognizer;         //  TensorFlow recognizer
     controls;
     map;
@@ -25,10 +29,10 @@ export default class Level2Scene extends Phaser.Scene {
     exit;
     speed = 100;
     exitReached;
-    static LEVEL_NAME = 'Level2Scene';
+
 
     constructor() {
-        super({key: 'Level2Scene'});
+        super({key: 'Level6Scene'});
     }
 
     init(data) {
@@ -37,8 +41,8 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tiles2', tiles2, {frameWidth: 32, frameHeight: 32});
-        this.load.tilemapTiledJSON('map2', map2);
+        this.load.image('tiles6', tiles6, {frameWidth: 32, frameHeight: 32});
+        this.load.tilemapTiledJSON('map6', map6);
 
         this.load.image(TestObject.Actions.GO_LEFT, GoLeft);
         this.load.image(TestObject.Actions.GO_RIGHT, GoRight);
@@ -52,24 +56,24 @@ export default class Level2Scene extends Phaser.Scene {
         this.cursor = this.input.keyboard.createCursorKeys();
 
         //create layout
-        this.map = this.make.tilemap({key: 'map2', tileWidth: 32, tileHeight: 32});
+        this.map = this.make.tilemap({key: 'map6', tileWidth: 40, tileHeight: 40});
 
         //creat ground tiles
         this.ground = this.map.createStaticLayer(
             'bot',
-            this.map.addTilesetImage('lpc_farming', 'tiles2', 32, 32),
+            this.map.addTilesetImage('tileset_town_multi_v002', 'tiles6', 32, 32),
             0, 0)
 
         //create sandbags tiles
         this.sandBags = this.map.createStaticLayer(
             'top',
-            this.map.addTilesetImage('lpc_farming', 'tiles2', 32, 32),
+            this.map.addTilesetImage('tileset_town_multi_v002', 'tiles6', 32, 32),
             0, 0)
         
         //create exit tiles
         this.exit = this.map.createStaticLayer(
             'exit',
-            this.map.addTilesetImage('lpc_farming', 'tiles2', 32, 32),
+            this.map.addTilesetImage('tileset_town_multi_v002', 'tiles6', 32, 32),
             0, 0)
         
         //add collider   
@@ -87,14 +91,14 @@ export default class Level2Scene extends Phaser.Scene {
         )
 
         //create player
-        this.player = this.add.existing(new TestObject(this, 16 + 10 * 32, 16 + 3 * 32, 'player'))
+        this.player = this.add.existing(new TestObject(this, 16 + 16 * 32, 16 + 38 * 32, 'player'))
         this.physics.add.existing(this.player);
         this.player.setAngle(270);
 
         //  Add action queue sprite to scene
         this.add
             .existing(new TestObject.ActionQueue(
-                this.physics.world, this, this.player, Level2Scene.DEPTH_COMMAND,
+                this.physics.world, this, this.player, Level6Scene.DEPTH_COMMAND,
                 TestObject.Actions.GO_LEFT, 
                 TestObject.Actions.GO_RIGHT, 
                 TestObject.Actions.GO_DOWN, 
@@ -102,7 +106,7 @@ export default class Level2Scene extends Phaser.Scene {
         
         //  Add Overlay to scene
         this.add
-            .existing(new Overlay(this, 'Demo Level 2'));
+            .existing(new Overlay(this, 'Level 6'));
 
         //create collider
         this.physics.add.collider(this.sandBags, this.player);
@@ -122,7 +126,12 @@ export default class Level2Scene extends Phaser.Scene {
         this.cameras
             .main
             .setBounds(0, 0, 800, 800);
-        this.cameras.main.startFollow(this.player);
+                //  Setup camera
+                this.cameras
+                .main
+                .setBounds(0, 0, Level6Scene.MAP_WIDTH, Level6Scene.MAP_HEIGHT)
+                .startFollow(this.player);
+
         this.events.on('resume', this.exitScene.bind(this));
 
     }
@@ -138,7 +147,7 @@ export default class Level2Scene extends Phaser.Scene {
                 this.exitReached = true;
                 this.scene.pause();
                 const clearSceneData = {
-                    parentSceneName: Level2Scene.LEVEL_NAME
+                    parentSceneName: Level6Scene.SCENE_NAME
                 };
                 const clearScene = this.scene.get(ClearScene.SCENE_NAME);
                 if (!clearScene)
@@ -146,7 +155,7 @@ export default class Level2Scene extends Phaser.Scene {
                     this.scene.add(ClearScene.SCENE_NAME, ClearScene, false, clearSceneData);
                     this.scene.launch(ClearScene.SCENE_NAME);
                     this.recognizer.stopListening();
-                } else
+                } else 
                 {
                     clearScene.scene.bringToTop();
                     clearScene.scene.restart(clearSceneData);
@@ -159,19 +168,20 @@ export default class Level2Scene extends Phaser.Scene {
     exitScene()
     {
         this.scene.stop();
-        
-        const level3Scene = this.scene.get('Level3Scene', Level3Scene);
-        if (!level3Scene)
+        //  Launch the next scene
+        const introScene = this.scene.get(LevelIntro.LEVEL_NAME);
+        if (!introScene)
         {
             this.recognizer.stopListening();
-            this.scene.add('Level3Scene', Level3Scene, false, {});
-            this.scene.launch('Level3Scene');
+            this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro, false, {});
+            this.scene.launch(LevelIntro.LEVEL_NAME);
         }
         else
         {
-            level3Scene.scene.bringToTop();
-            level3Scene.scene.restart({});
+            introScene.scene.bringToTop();
+            introScene.scene.restart({});
         }
+
     }
 
     update(time, delta)
