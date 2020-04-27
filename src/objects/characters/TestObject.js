@@ -161,8 +161,7 @@ export default class TestObject extends Phaser.Physics.Arcade.Sprite {
             },
             executeNext() {
                 if (this.queue.length > 0 
-                    && self.body.velocity.x === 0
-                    && self.body.velocity.y === 0)
+                    && self.body.speed < self.SPEED)
                 {
                     let nextAction = this.queue.shift();
                     switch(nextAction)
@@ -184,8 +183,7 @@ export default class TestObject extends Phaser.Physics.Arcade.Sprite {
                 }
                 
                 if (this.queue.length === 0 
-                    && self.body.velocity.x === 0
-                    && self.body.velocity.y === 0)
+                    && self.body.speed < self.SPEED)
                 {
                     self.emit(TestObject.Events.STATE_IDLE);
                 }

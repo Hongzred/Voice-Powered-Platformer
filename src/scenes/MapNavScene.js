@@ -1,3 +1,4 @@
+import "@babel/polyfill";
 import "phaser";
 import TestObject from "../objects/characters/TestObject"
 import Overlay from "../objects/Overlay"
@@ -33,7 +34,7 @@ export default class MapNavScene extends Phaser.Scene {
 
     init(data)
     {
-        this.annyang = data.annyang;
+        this.setupVoice();
     }
 
     preload() 
@@ -94,24 +95,28 @@ export default class MapNavScene extends Phaser.Scene {
         this.coins = this.physics.add.group();
         this.coins
             .addMultiple(this.map.createFromObjects('Coins', 361, {key: 'coin'}));
+        this.coins.getChildren().forEach((coin) => {
+            console.log(coin.body)
+        })
 
         //  Handle action when player overlaps with coins
         this.physics.add.overlap(
             this.player,
             this.coins,
             (player, coin) => {
-                console.log('overlap')
-                this.coins.remove(coin);
-                coin.setActive(false).setVisible(false);
-                this.coinsCollected++;
-                if (this.coinsCollected === this.COINS_TOTAL) {
-                    this.lock
-                        .getChildren()
-                        .forEach(lockSprite => {
-                            this.lock.remove(lockSprite);
-                            lockSprite.setActive(false).setVisible(false);
-                        })
-                }
+                //  Handle logic
+            }
+        )
+
+        this.physics.add.overlap(
+            this.coins,
+            this.barrels,
+            (coin, barrel) => {
+               if (barrel.index >= 0)
+               {
+                   coin.body.setVelocityX(0);
+                   coin.body.setVelocityY(0);
+               }
             }
         )
 
@@ -123,6 +128,7 @@ export default class MapNavScene extends Phaser.Scene {
         this.physics.add.collider(this.barrels, this.player);
         this.physics.add.collider(this.coins, this.player);
         this.physics.add.collider(this.lock, this.player);
+        this.physics.add.collider(this.coins, this.barrels);
 
         //  Graphical debugger
         let debugGraphics = this.add.graphics();
@@ -134,15 +140,12 @@ export default class MapNavScene extends Phaser.Scene {
             .main
             .setBounds(0, 0, 800, 800);
         this.cameras.main.startFollow(this.player);
-        
-        //  Setup annyang
-        this.setupVoice(this.annyang);
-
 
     }
 
     update(time, delta)
     {
+        //  console.log(this.player.body.velocity)
         function handleKeyUp(e) {
             switch (e.code) {
                 case 'ArrowRight':
@@ -161,28 +164,62 @@ export default class MapNavScene extends Phaser.Scene {
         }
         
         this.input.keyboard.on('keyup', handleKeyUp, this);
+        
     }
 
-    setupVoice(annyang)
+    setupVoice()
     {
-        let commands = {
-            'l*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_LEFT);
-            },
-            'r*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
-            },
-            't*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_UP);
-            },
-            'd*rest' : rest => {
-                this.player.action.enqueue(TestObject.Actions.GO_DOWN);
-            }
+        const self = this;
+        let recognizer;
 
+        function predictWord() 
+        {
+            // Array of words that the recognizer is trained to recognize.
+            self.recognizer = recognizer;
+            const words = recognizer.wordLabels();
+            recognizer.listen(({scores}) => {
+                // Turn scores into a list of (score,word) pairs.
+                scores = Array.from(scores).map((s, i) => ({score: s, word: words[i]}));
+                // Find the most probable word.
+                scores.sort((s1, s2) => s2.score - s1.score);
+                self.handleVoice(scores[0].word);
+            }, {
+                probabilityThreshold: 0.85,
+                overlapFactor: 0.30
+            });
         }
-        annyang.removeCommands();
-        annyang.addCommands(commands);
-        annyang.start();
+
+        async function listen() 
+        {
+            recognizer = speechCommands.create('BROWSER_FFT', 'directional4w');
+            await recognizer.ensureModelLoaded();
+            predictWord();
+        }
+           
+        listen();
     }
+
+    handleVoice(voiceCommand)
+    {
+        if (voiceCommand === 'left')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_LEFT);
+        }
+        else if (voiceCommand === 'right')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_RIGHT);
+        }
+        else if (voiceCommand === 'up')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_UP);
+        }
+        else if (voiceCommand === 'down')
+        {
+            this.player.action.enqueue(TestObject.Actions.GO_DOWN);
+        }
+       
+        this.input.emit('pointerup');
+    }
+
     
 }

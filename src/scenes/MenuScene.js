@@ -1,7 +1,7 @@
 import "phaser";
 import GameScene from "./GameScene";
 import config from "../config/config";
-import LevelIntro from "./LevelIntro";
+import MapNavScene from "./MapNavScene";
 import skyImg from "../assets/sky.png";
 import player from "../assets/car.png";
 import menuMusic from "../assets/menu_music.mp3";
@@ -67,9 +67,9 @@ export default class MenuScene extends Phaser.Scene {
 
     goPlay() {
         this.scene.add('Game', GameScene);
-        this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro)
+        this.scene.add('MapNav', MapNavScene)
 
         this.scene.stop();
-        this.scene.start(LevelIntro.LEVEL_NAME, {});
+        this.scene.start('MapNav', {});
     } 
 }
