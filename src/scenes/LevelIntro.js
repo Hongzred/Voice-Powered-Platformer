@@ -5,6 +5,7 @@ import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
 import ClearScene from "./ClearScene"
 import Level2Scene from "./Level2Scene";
+import Level7Scene from "./level7";
 import tileset_1 from "../assets/level_intro_set1.png";
 import introLevel from "../assets/VPP-level-intro.json";
 import GoLeft from "../assets/left.png";
@@ -307,17 +308,17 @@ export default class LevelIntro extends Phaser.Scene {
     {
         this.scene.stop();
         
-        const level2Scene = this.scene.get('Level2Scene', Level2Scene);
-        if (!level2Scene)
+        const level7Scene = this.scene.get('Level7Scene', Level7Scene);
+        if (!level7Scene)
         {
             this.recognizer.stopListening();
-            this.scene.add('Level2Scene', Level2Scene, false, {});
-            this.scene.launch('Level2Scene');
+            this.scene.add('Level7Scene', Level7Scene, false, {});
+            this.scene.launch('Level7Scene');
         }
         else
         {
-            level2Scene.scene.bringToTop();
-            level2Scene.scene.restart({});
+            level7Scene.scene.bringToTop();
+            level7Scene.scene.restart({});
         }
     }
 
