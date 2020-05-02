@@ -102,7 +102,7 @@ export default class Level3Scene extends Phaser.Scene {
         
         //  Add Overlay to scene
         this.add
-            .existing(new Overlay(this, 'Demo Level 3'));
+            .existing(new Overlay(this, 'Level 3'));
 
         //create collider
         this.physics.add.collider(this.sandBags, this.player);

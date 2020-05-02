@@ -102,7 +102,7 @@ export default class Level2Scene extends Phaser.Scene {
         
         //  Add Overlay to scene
         this.add
-            .existing(new Overlay(this, 'Demo Level 2'));
+            .existing(new Overlay(this, 'Level 2'));
 
         //create collider
         this.physics.add.collider(this.sandBags, this.player);

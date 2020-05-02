@@ -13,7 +13,7 @@ import GoDown from "../assets/down.png"
 
 export default class Level5 extends Phaser.Scene
 {
-    static SCENE_NAME = 'LEVEL_5';
+    static SCENE_NAME = 'LEVEL 5';
     static TILE_SET_KEY = 'LEVEL_5_TILEMAP';
     static TILE_SET_SPRITE = 'Level5 Tile Set';
     static TILE_SET_NAME = 'level5';
