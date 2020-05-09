@@ -1,25 +1,24 @@
 import "phaser";
 import Overlay from "../objects/Overlay";
 import TestObject from "../objects/characters/TestObject";
-import tiles6 from "../assets/tileset_town_multi_v002.png";
-import map6 from "../assets/level6.json";
+import tiles7 from "../assets/map3-tiles.png";
+import map7 from "../assets/level7.json";
 import GoLeft from "../assets/left.png";
 import GoRight from "../assets/right.png";
 import GoUp from "../assets/up.png";
 import GoDown from "../assets/down.png"
 import ClearScene from "./ClearScene";
-import Level7Scene from "./level7";
+import LevelIntro from "./LevelIntro";
 
 
-
-export default class Level6Scene extends Phaser.Scene {
+export default class Level7Scene extends Phaser.Scene {
 
     static DEPTH_COMMAND;
     static DEPTH_GROUND = 50;
     static DEPTH_WALLS = 100;
     static MAP_WIDTH = 40*32 + 16;
     static MAP_HEIGHT = 40*32 + 16;
-    static SCENE_NAME = 'Level6Scene';
+    static SCENE_NAME = 'Level7Scene';
     
     recognizer;         //  TensorFlow recognizer
     controls;
@@ -33,7 +32,7 @@ export default class Level6Scene extends Phaser.Scene {
 
 
     constructor() {
-        super({key: 'Level6Scene'});
+        super({key: 'Level7Scene'});
     }
 
     init(data) {
@@ -42,8 +41,8 @@ export default class Level6Scene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tiles6', tiles6, {frameWidth: 32, frameHeight: 32});
-        this.load.tilemapTiledJSON('map6', map6);
+        this.load.image('tiles7', tiles7, {frameWidth: 32, frameHeight: 32});
+        this.load.tilemapTiledJSON('map7', map7);
 
         this.load.image(TestObject.Actions.GO_LEFT, GoLeft);
         this.load.image(TestObject.Actions.GO_RIGHT, GoRight);
@@ -57,24 +56,24 @@ export default class Level6Scene extends Phaser.Scene {
         this.cursor = this.input.keyboard.createCursorKeys();
 
         //create layout
-        this.map = this.make.tilemap({key: 'map6', tileWidth: 40, tileHeight: 40});
+        this.map = this.make.tilemap({key: 'map7', tileWidth: 40, tileHeight: 40});
 
         //creat ground tiles
         this.ground = this.map.createStaticLayer(
             'bot',
-            this.map.addTilesetImage('tileset_town_multi_v002', 'tiles6', 32, 32),
+            this.map.addTilesetImage('32x32_map_tile v3.1 [MARGINLESS]', 'tiles7', 32, 32),
             0, 0)
 
         //create sandbags tiles
         this.sandBags = this.map.createStaticLayer(
             'top',
-            this.map.addTilesetImage('tileset_town_multi_v002', 'tiles6', 32, 32),
+            this.map.addTilesetImage('32x32_map_tile v3.1 [MARGINLESS]', 'tiles7', 32, 32),
             0, 0)
         
         //create exit tiles
         this.exit = this.map.createStaticLayer(
             'exit',
-            this.map.addTilesetImage('tileset_town_multi_v002', 'tiles6', 32, 32),
+            this.map.addTilesetImage('32x32_map_tile v3.1 [MARGINLESS]', 'tiles7', 32, 32),
             0, 0)
         
         //add collider   
@@ -92,14 +91,14 @@ export default class Level6Scene extends Phaser.Scene {
         )
 
         //create player
-        this.player = this.add.existing(new TestObject(this, 16 + 16 * 32, 16 + 38 * 32, 'player'))
+        this.player = this.add.existing(new TestObject(this, 16 + 16 * 32, 16 + 36 * 33, 'player'))
         this.physics.add.existing(this.player);
         this.player.setAngle(270);
 
         //  Add action queue sprite to scene
         this.add
             .existing(new TestObject.ActionQueue(
-                this.physics.world, this, this.player, Level6Scene.DEPTH_COMMAND,
+                this.physics.world, this, this.player, Level7Scene.DEPTH_COMMAND,
                 TestObject.Actions.GO_LEFT, 
                 TestObject.Actions.GO_RIGHT, 
                 TestObject.Actions.GO_DOWN, 
@@ -107,7 +106,7 @@ export default class Level6Scene extends Phaser.Scene {
         
         //  Add Overlay to scene
         this.add
-            .existing(new Overlay(this, 'Level 6'));
+            .existing(new Overlay(this, 'Level 7'));
 
         //create collider
         this.physics.add.collider(this.sandBags, this.player);
@@ -130,7 +129,7 @@ export default class Level6Scene extends Phaser.Scene {
                 //  Setup camera
                 this.cameras
                 .main
-                .setBounds(0, 0, Level6Scene.MAP_WIDTH, Level6Scene.MAP_HEIGHT)
+                .setBounds(0, 0, Level7Scene.MAP_WIDTH, Level7Scene.MAP_HEIGHT)
                 .startFollow(this.player);
 
         this.events.on('resume', this.exitScene.bind(this));
@@ -148,7 +147,7 @@ export default class Level6Scene extends Phaser.Scene {
                 this.exitReached = true;
                 this.scene.pause();
                 const clearSceneData = {
-                    parentSceneName: Level6Scene.SCENE_NAME
+                    parentSceneName: Level7Scene.SCENE_NAME
                 };
                 const clearScene = this.scene.get(ClearScene.SCENE_NAME);
                 if (!clearScene)
@@ -170,17 +169,17 @@ export default class Level6Scene extends Phaser.Scene {
     {
         this.scene.stop();
         //  Launch the next scene
-        const level7Scene = this.scene.get(Level7Scene.SCENE_NAME);
-        if (!level7Scene)
+        const introScene = this.scene.get(LevelIntro.LEVEL_NAME);
+        if (!introScene)
         {
             this.recognizer.stopListening();
-            this.scene.add(Level7Scene.SCENE_NAME, Level7Scene, false, {});
-            this.scene.launch(Level7Scene.SCENE_NAME);
+            this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro, false, {});
+            this.scene.launch(LevelIntro.LEVEL_NAME);
         }
         else
         {
-            level7Scene.scene.bringToTop();
-            level7Scene.scene.restart({});
+            introScene.scene.bringToTop();
+            introScene.scene.restart({});
         }
 
     }
