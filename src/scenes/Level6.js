@@ -8,7 +8,8 @@ import GoRight from "../assets/right.png";
 import GoUp from "../assets/up.png";
 import GoDown from "../assets/down.png"
 import ClearScene from "./ClearScene";
-import LevelIntro from "./LevelIntro";
+import Level7Scene from "./level7";
+
 
 
 export default class Level6Scene extends Phaser.Scene {
@@ -169,17 +170,17 @@ export default class Level6Scene extends Phaser.Scene {
     {
         this.scene.stop();
         //  Launch the next scene
-        const introScene = this.scene.get(LevelIntro.LEVEL_NAME);
-        if (!introScene)
+        const level7Scene = this.scene.get(Level7Scene.SCENE_NAME);
+        if (!level7Scene)
         {
             this.recognizer.stopListening();
-            this.scene.add(LevelIntro.LEVEL_NAME, LevelIntro, false, {});
-            this.scene.launch(LevelIntro.LEVEL_NAME);
+            this.scene.add(Level7Scene.SCENE_NAME, Level7Scene, false, {});
+            this.scene.launch(Level7Scene.SCENE_NAME);
         }
         else
         {
-            introScene.scene.bringToTop();
-            introScene.scene.restart({});
+            level7Scene.scene.bringToTop();
+            level7Scene.scene.restart({});
         }
 
     }
